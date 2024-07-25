@@ -1,0 +1,64 @@
+### create event
+# @name createEvent
+POST http://localhost:3000/events/
+Content-Type: application/json
+
+{
+    "name": "Nasc Karl",
+    "description": "Nascimento do doutor Carlos Marques",
+    "date": "2020-05-16T00:00:00",
+    "price": 100
+}
+
+
+###
+@eventId = {{ createEvent.response.body.id }}
+
+
+### list events
+GET http://localhost:3000/events
+X-Api-Token: 4242
+
+
+### find one event
+GET http://localhost:3000/events/{{ eventId }}
+
+
+### update event
+PATCH http://localhost:3000/events/{{ eventId }}
+Content-Type: application/json
+
+{
+    "name": "Nasc Pep",
+    "description": "Nascimento do Camarada Pep Mujica",
+    "date": "2020-09-21T00:00:00",
+    "price": 100
+}
+
+
+### delete event
+DELETE http://localhost:3000/events/{{ eventId }}
+
+
+### create spot
+POST http://localhost:3000/events/{{ eventId }}/spots
+Content-Type: application/json
+
+{
+    "name": "D2"
+}
+
+
+### list spots
+GET http://localhost:3000/events/{{ eventId }}/spots
+
+
+### reserve spot
+POST http://localhost:3000/events/{{ eventId }}/reserve
+Content-Type: application/json
+
+{
+    "spots": ["A1", "D2"],
+    "ticketKind": "half",
+    "email": "karl@pep.com"
+}

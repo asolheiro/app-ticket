@@ -1,0 +1,32 @@
+services:
+  app-partner:
+    build: .
+    ports:
+      - 3000:3000
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    volumes:
+      - type: volume
+        source: db 
+        target: /data
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+    volumes:
+      - ./.docker/mysql/:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+  
+volumes:
+  db:
+    driver: local
