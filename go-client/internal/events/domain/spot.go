@@ -3,22 +3,8 @@ package domain
 import "github.com/google/uuid"
 
 
-type SpotStatus string
 
-const (
-	SpotStatusAvailable SpotStatus = "available"
-	SpotStatusSold      SpotStatus = "sold"
-)
-
-type Spot struct {
-	ID       string
-	EventID  string
-	Name     string
-	Status   SpotStatus
-	TicketID string
-}
-
-// Validate if spots data is valid
+// Validate checks if spots data is valid.
 func (s Spot) Validate() error {
 	if len(s.Name) <= 1 {
 		return ErrSpotInvalidName
@@ -32,7 +18,7 @@ func (s Spot) Validate() error {
 	return nil
 }
 
-// Create a new spot
+// NewSpot create a new spot with the given parameters.
 func NewSpot(event *Event, name string) (*Spot, error) {
 	spot := &Spot{
 		ID:      uuid.New().String(),
@@ -45,4 +31,14 @@ func NewSpot(event *Event, name string) (*Spot, error) {
 		return nil, err
 	}
 	return spot, nil
+}
+
+// ReserveSpot updates a spot Status on database
+func (s *Spot) ReserveSpot(ticketId string) error {
+	if s.Status == SpotStatusSold {
+		return ErrSpotAlreadyReserved
+	}
+	s.Status = SpotStatusSold
+	s.TicketID = ticketId
+	return nil
 }

@@ -2,21 +2,6 @@ package domain
 
 import "github.com/google/uuid"
 
-type TicketKind string
-
-const (
-	TicketKindHalf TicketKind = "half"
-	TicketKindFull TicketKind = "full"
-)
-
-type Ticket struct {
-	ID         string
-	EventID    string
-	Spot       *Spot
-	TicketKind TicketKind
-	Price      float64
-}
-
 func IsValidTicketKind(TicketKind TicketKind) bool {
 	return TicketKind == TicketKindHalf || TicketKind == TicketKindFull
 }

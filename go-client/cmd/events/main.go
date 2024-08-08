@@ -19,7 +19,13 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// @title Events API
+// @version 1.0
+// @description This is a server for managing events
+// @host localhost:8080
+// @BasePath /
 func main() {
+	// DataBase configs
 	db, err := sql.Open("mysql", "test_user:test_password@tcp(golang-mysql:3306)/test_db")
 	if err != nil {
 		log.Fatal(err)
@@ -90,7 +96,7 @@ func main() {
 	}()
 
 	// Initializing HTTP server
-	log.Println("servidor HTTP rodando na porta %s", server.Addr)
+	log.Printf("\nservidor HTTP rodando na porta %s", server.Addr)
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatalf("erro ao iniciar servidor HTTP: %v\n", err)
 	}

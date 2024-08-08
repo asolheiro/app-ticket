@@ -4,10 +4,12 @@ import "fmt"
 
 type spotService struct {}
 
+// NewSpotService creates a new instance of SpotService.
 func NewSpotService() *spotService {
 	return &spotService{}
 }
 
+// GenerateSpots generates the specified number of spots for an given event.
 func (s *spotService) GenerateSpots(event *Event, quantity int) error {
 	if quantity <= 0 {
 		return ErrServiceInvalidQuantity
