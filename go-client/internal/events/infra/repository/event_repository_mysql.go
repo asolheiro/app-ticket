@@ -220,6 +220,47 @@ func (r *mysqlEventRepository) ReserveSpot(spotID, ticketID string) error {
 	return err
 }
 
+func (r *mysqlEventRepository) FindSpotByID(spotID string) (*domain.Spot, error) {
+	query := `
+		SELECT
+			s.id, s.event_id, s.name, s.status, s.ticket_id,
+			t.id, t.event_id, t.spot_id, t.ticket_kin, t.price
+		FROM 
+			spots s
+		LEFT JOIN tickets t ON s.id = t.spot_id
+		WHERE
+			s.id = ?
+	`
+	row := r.db.QueryRow(query, spotID)
+
+	var (
+		spot domain.Spot
+		ticket domain.Ticket
+		ticketID, ticketEventID, ticketSpotID, ticketKind sql.NullString
+		ticketPrice sql.NullFloat64
+	)
+
+	err := row.Scan(
+		&spot.ID, &spot.EventID, &spot.Name, &spot.Status, &spot.TicketID,
+		&ticketID, &ticketEventID, &ticketSpotID, &ticketKind, &ticketPrice,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, domain.ErrSpotNotFound
+		}
+		return nil, err
+	}
+	if ticketID.Valid {
+		ticket.ID = ticketID.String
+		ticket.EventID = ticketEventID.String
+		ticket.Spot = &spot
+		ticket.TicketKind = domain.TicketKind(ticketKind.String)
+		ticket.Price = ticketPrice.Float64
+		spot.TicketID = ticket.ID
+	}
+	return &spot, nil
+}
+
 // FindSpotsByEventID returns all spots for a given eventID.
 func (r *mysqlEventRepository) FindSpotsByEventID(eventID string) ([]*domain.Spot, error) {
 	query := `
